@@ -29,7 +29,6 @@ export default function ProxyDemo() {
       
       const data = await res.json();
       
-      // Simulación de pasos de red
       setTimeout(() => setLogs(prev => [...prev, "> [PROXY] Petición interceptada. Aplicando reglas de filtrado..."]), 500);
       setTimeout(() => setLogs(prev => [...prev, "> [PROXY] ACL 'local_net' permitida. Reenviando a destino..."]), 1200);
       setTimeout(() => setLogs(prev => [...prev, "> [DESTINO] 200 OK. Enviando datos de vuelta..."]), 2200);
@@ -48,7 +47,6 @@ export default function ProxyDemo() {
 
   return (
     <div className="min-h-screen bg-[#1c051a] text-white selection:bg-ubuntu selection:text-white">
-      {/* Navbar Superior */}
       <nav className="border-b border-gray-800 bg-black/40 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -75,7 +73,6 @@ export default function ProxyDemo() {
       <main className="max-w-6xl mx-auto p-6 lg:p-12">
         {activeTab === 'demo' ? (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            {/* Header de la Demo */}
             <div className="mb-12">
               <span className="bg-ubuntu/10 text-ubuntu border border-ubuntu/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4 inline-block">
                 Proyecto Final de Redes
@@ -86,12 +83,9 @@ export default function ProxyDemo() {
               </p>
             </div>
 
-            {/* Arquitectura de Red */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center mb-16 relative">
-              {/* Líneas de conexión de fondo */}
               <div className="hidden lg:block absolute top-1/2 left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-blue-500/20 via-ubuntu/20 to-purple-500/20 -z-10"></div>
 
-              {/* Cliente */}
               <div className="group bg-gray-900/40 p-8 rounded-3xl border border-gray-800 hover:border-blue-500/50 transition-all text-center">
                 <div className="w-20 h-20 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <Laptop size={40} className="text-blue-500" />
@@ -107,7 +101,6 @@ export default function ProxyDemo() {
                 </button>
               </div>
 
-              {/* Proxy Ubuntu (El corazón del proyecto) */}
               <div className="bg-gray-900/80 p-8 rounded-3xl border-2 border-ubuntu relative overflow-hidden shadow-[0_0_40px_rgba(233,84,32,0.15)]">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Settings size={80} />
@@ -131,7 +124,6 @@ export default function ProxyDemo() {
                 </div>
               </div>
 
-              {/* Internet */}
               <div className="group bg-gray-900/40 p-8 rounded-3xl border border-gray-800 hover:border-purple-500/50 transition-all text-center">
                 <div className="w-20 h-20 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                   <Globe size={40} className="text-purple-500" />
@@ -144,28 +136,30 @@ export default function ProxyDemo() {
               </div>
             </div>
 
-            {/* Animación de Paquetes */}
             <div className="relative h-24 mb-16 flex items-center justify-center">
               <AnimatePresence>
                 {isAnimating && (
-                  <>
-                    <motion.div 
-                      initial={{ left: "15%", opacity: 0 }}
-                      animate={[
-                        { left: "50%", opacity: 1, scale: 1.2, transition: { duration: 0.8 } },
-                        { left: "85%", opacity: 1, scale: 1, transition: { duration: 0.8, delay: 1 } }
-                      ]}
-                      exit={{ opacity: 0 }}
-                      className="absolute w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-[0_0_25px_rgba(251,191,36,0.5)] z-10 flex items-center justify-center border-2 border-white/20"
-                    >
-                      <Activity size={20} className="text-black" />
-                    </motion.div>
-                  </>
+                  <motion.div 
+                    initial={{ left: "15%", opacity: 0 }}
+                    animate={{ 
+                      left: ["15%", "50%", "85%"],
+                      opacity: [0, 1, 1],
+                      scale: [1, 1.2, 1]
+                    }}
+                    transition={{
+                      duration: 2,
+                      times: [0, 0.5, 1],
+                      ease: "easeInOut"
+                    }}
+                    exit={{ opacity: 0 }}
+                    className="absolute w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-[0_0_25px_rgba(251,191,36,0.5)] z-10 flex items-center justify-center border-2 border-white/20"
+                  >
+                    <Activity size={20} className="text-black" />
+                  </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            {/* Paneles de Monitoreo */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <h4 className="flex items-center gap-2 text-gray-400 font-bold uppercase text-xs tracking-widest ml-1">
