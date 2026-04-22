@@ -2,138 +2,281 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Laptop, Server, Globe, ArrowRight, ShieldCheck, Terminal as TerminalIcon } from 'lucide-react';
+import { 
+  Laptop, Server, Globe, ArrowRight, ShieldCheck, 
+  Terminal as TerminalIcon, Info, Code, Settings, Activity 
+} from 'lucide-react';
 
 export default function ProxyDemo() {
   const [isAnimating, setIsAnimating] = useState(false);
-  const [logs, setLogs] = useState<string[]>(["Sistema Proxy Ubuntu listo...", "Esperando petición del cliente..."]);
+  const [logs, setLogs] = useState<string[]>(["[SISTEMA] Proxy Ubuntu 22.04 LTS inicializado", "[INFO] Escuchando en puerto 8080 (HTTP)"]);
   const [response, setResponse] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'demo' | 'config'>('demo');
 
   const startDemo = async () => {
     if (isAnimating) return;
     
     setIsAnimating(true);
     setResponse(null);
-    setLogs(prev => [...prev, "> Iniciando petición HTTP vía Proxy..."]);
+    setLogs(prev => [...prev, "> [CLIENTE] Iniciando conexión TCP/IP...", "> [CLIENTE] GET /index.html HTTP/1.1"]);
 
     try {
       const res = await fetch('/api/proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: 'https://servidor-destino.com', headers: { 'User-Agent': 'Ubuntu-Client' } })
+        body: JSON.stringify({ url: 'https://servidor-destino.com', headers: { 'User-Agent': 'Ubuntu-Demo-Client' } })
       });
       
       const data = await res.json();
       
-      // Sincronizar logs con la animación
-      setTimeout(() => setLogs(prev => [...prev, ...data.proxy_logs]), 1000);
+      // Simulación de pasos de red
+      setTimeout(() => setLogs(prev => [...prev, "> [PROXY] Petición interceptada. Aplicando reglas de filtrado..."]), 500);
+      setTimeout(() => setLogs(prev => [...prev, "> [PROXY] ACL 'local_net' permitida. Reenviando a destino..."]), 1200);
+      setTimeout(() => setLogs(prev => [...prev, "> [DESTINO] 200 OK. Enviando datos de vuelta..."]), 2200);
+      
       setTimeout(() => {
         setResponse(data.data);
         setIsAnimating(false);
-        setLogs(prev => [...prev, "> Ciclo completado con éxito."]);
+        setLogs(prev => [...prev, "> [SISTEMA] Transmisión finalizada correctamente."]);
       }, 3000);
 
     } catch (error) {
-      setLogs(prev => [...prev, "! Error de conexión en el Proxy"]);
+      setLogs(prev => [...prev, "! [ERROR] Fallo crítico en el túnel proxy"]);
       setIsAnimating(false);
     }
   };
 
   return (
-    <main className="min-h-screen p-8 max-w-6xl mx-auto">
-      <header className="mb-12 text-center">
-        <h1 className="text-5xl font-extrabold mb-4 ubuntu-gradient bg-clip-text text-transparent italic">
-          Ubuntu Proxy Service Demo
-        </h1>
-        <p className="text-gray-400 text-xl">Arquitectura de Red y Control de Tráfico en Linux</p>
-      </header>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        {/* Nodo Cliente */}
-        <div className="bg-gray-900/50 p-6 rounded-2xl border border-gray-800 flex flex-col items-center">
-          <Laptop size={64} className="text-blue-400 mb-4" />
-          <h3 className="text-xl font-bold">Cliente</h3>
-          <p className="text-sm text-gray-500">Navegador / App</p>
-          <button 
-            onClick={startDemo}
-            disabled={isAnimating}
-            className="mt-6 px-6 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 rounded-full font-bold transition-all flex items-center gap-2"
-          >
-            Enviar Petición <ArrowRight size={18} />
-          </button>
-        </div>
-
-        {/* Nodo Proxy Ubuntu */}
-        <div className="bg-gray-900/80 p-6 rounded-2xl border-2 border-ubuntu flex flex-col items-center relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-ubuntu shadow-[0_0_15px_#E95420]"></div>
-          <Server size={64} className="text-ubuntu mb-4" />
-          <h3 className="text-xl font-bold">Proxy Ubuntu</h3>
-          <p className="text-sm text-gray-500">Squid / Nginx Proxy</p>
-          <div className="mt-4 flex gap-2">
-            <span className="px-2 py-1 bg-green-900/30 text-green-400 text-xs rounded border border-green-800">Caché ON</span>
-            <span className="px-2 py-1 bg-blue-900/30 text-blue-400 text-xs rounded border border-blue-800">Filtro Activo</span>
+    <div className="min-h-screen bg-[#1c051a] text-white selection:bg-ubuntu selection:text-white">
+      {/* Navbar Superior */}
+      <nav className="border-b border-gray-800 bg-black/40 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-ubuntu rounded-full flex items-center justify-center font-bold">U</div>
+            <span className="font-bold tracking-tight text-xl">Ubuntu <span className="text-ubuntu">Proxy</span> Demo</span>
           </div>
-        </div>
-
-        {/* Nodo Destino */}
-        <div className="bg-gray-900/50 p-6 rounded-2xl border border-gray-800 flex flex-col items-center">
-          <Globe size={64} className="text-purple-400 mb-4" />
-          <h3 className="text-xl font-bold">Internet</h3>
-          <p className="text-sm text-gray-500">Servidor Destino</p>
-        </div>
-      </div>
-
-      {/* Diagrama Animado */}
-      <div className="relative h-24 mb-12 flex items-center justify-center">
-        <div className="absolute w-[80%] h-1 bg-gray-800 rounded-full"></div>
-        <AnimatePresence>
-          {isAnimating && (
-            <motion.div 
-              initial={{ left: "10%", opacity: 0 }}
-              animate={[
-                { left: "50%", opacity: 1, scale: 1.5, transition: { duration: 1 } },
-                { left: "90%", opacity: 1, scale: 1, transition: { duration: 1, delay: 1 } }
-              ]}
-              exit={{ opacity: 0 }}
-              className="absolute w-6 h-6 bg-yellow-400 rounded-full shadow-[0_0_20px_#facc15] z-10 flex items-center justify-center"
+          <div className="flex gap-6 text-sm font-medium">
+            <button 
+              onClick={() => setActiveTab('demo')}
+              className={`pb-1 transition-all ${activeTab === 'demo' ? 'border-b-2 border-ubuntu text-ubuntu' : 'text-gray-400 hover:text-white'}`}
             >
-              <ShieldCheck size={14} className="text-black font-bold" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Terminal de Logs */}
-        <div className="bg-black rounded-xl p-4 border border-gray-700 font-mono text-sm h-64 overflow-y-auto shadow-2xl">
-          <div className="flex items-center gap-2 mb-4 border-b border-gray-800 pb-2 text-gray-400">
-            <TerminalIcon size={16} /> <span>root@ubuntu-proxy:~# tail -f /var/log/proxy/access.log</span>
+              Demostración Viva
+            </button>
+            <button 
+              onClick={() => setActiveTab('config')}
+              className={`pb-1 transition-all ${activeTab === 'config' ? 'border-b-2 border-ubuntu text-ubuntu' : 'text-gray-400 hover:text-white'}`}
+            >
+              Configuración Ubuntu
+            </button>
           </div>
-          {logs.map((log, i) => (
-            <div key={i} className={log.startsWith('!') ? 'text-red-400' : log.startsWith('>') ? 'text-blue-400' : 'text-green-400'}>
-              {log}
-            </div>
-          ))}
         </div>
+      </nav>
 
-        {/* Panel de Respuesta JSON */}
-        <div className="bg-gray-900/40 rounded-xl p-4 border border-gray-800 h-64 overflow-y-auto">
-          <h4 className="text-gray-400 mb-4 font-bold flex items-center gap-2">
-            <Globe size={16} /> Respuesta del Servidor Final
-          </h4>
-          {response ? (
-            <pre className="text-purple-300 text-xs">{JSON.stringify(response, null, 2)}</pre>
-          ) : (
-            <div className="h-full flex items-center justify-center text-gray-600 italic">
-              Esperando respuesta...
+      <main className="max-w-6xl mx-auto p-6 lg:p-12">
+        {activeTab === 'demo' ? (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            {/* Header de la Demo */}
+            <div className="mb-12">
+              <span className="bg-ubuntu/10 text-ubuntu border border-ubuntu/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4 inline-block">
+                Proyecto Final de Redes
+              </span>
+              <h2 className="text-4xl font-black mb-4">Simulación de Flujo de Datos</h2>
+              <p className="text-gray-400 max-w-2xl text-lg">
+                Interactúa con el sistema para visualizar cómo un servidor Ubuntu actúa como intermediario seguro entre un cliente y el internet.
+              </p>
             </div>
-          )}
+
+            {/* Arquitectura de Red */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center mb-16 relative">
+              {/* Líneas de conexión de fondo */}
+              <div className="hidden lg:block absolute top-1/2 left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-blue-500/20 via-ubuntu/20 to-purple-500/20 -z-10"></div>
+
+              {/* Cliente */}
+              <div className="group bg-gray-900/40 p-8 rounded-3xl border border-gray-800 hover:border-blue-500/50 transition-all text-center">
+                <div className="w-20 h-20 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <Laptop size={40} className="text-blue-500" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Cliente Final</h3>
+                <p className="text-gray-500 text-sm mb-6">IP: 192.168.1.50</p>
+                <button 
+                  onClick={startDemo}
+                  disabled={isAnimating}
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-800 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-900/20"
+                >
+                  {isAnimating ? "Procesando..." : "Realizar Petición"} <ArrowRight size={18} />
+                </button>
+              </div>
+
+              {/* Proxy Ubuntu (El corazón del proyecto) */}
+              <div className="bg-gray-900/80 p-8 rounded-3xl border-2 border-ubuntu relative overflow-hidden shadow-[0_0_40px_rgba(233,84,32,0.15)]">
+                <div className="absolute top-0 right-0 p-3 opacity-10">
+                  <Settings size={80} />
+                </div>
+                <div className="w-20 h-20 bg-ubuntu/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Server size={40} className="text-ubuntu" />
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-center text-ubuntu">Proxy Ubuntu</h3>
+                <p className="text-gray-500 text-sm mb-4 text-center">IP Estática: 10.0.0.1</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs border-b border-gray-800 pb-2">
+                    <span className="text-gray-500 uppercase">Estado</span>
+                    <span className="text-green-400 font-bold flex items-center gap-1">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div> ACTIVO
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-500 uppercase">Motor</span>
+                    <span className="text-white">Squid v5.7</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Internet */}
+              <div className="group bg-gray-900/40 p-8 rounded-3xl border border-gray-800 hover:border-purple-500/50 transition-all text-center">
+                <div className="w-20 h-20 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <Globe size={40} className="text-purple-500" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Servidor Destino</h3>
+                <p className="text-gray-500 text-sm mb-6">api.externa.com</p>
+                <div className="text-xs text-purple-400 bg-purple-900/20 py-2 rounded-lg border border-purple-800/30">
+                  HTTPS Puerto 443
+                </div>
+              </div>
+            </div>
+
+            {/* Animación de Paquetes */}
+            <div className="relative h-24 mb-16 flex items-center justify-center">
+              <AnimatePresence>
+                {isAnimating && (
+                  <>
+                    <motion.div 
+                      initial={{ left: "15%", opacity: 0 }}
+                      animate={[
+                        { left: "50%", opacity: 1, scale: 1.2, transition: { duration: 0.8 } },
+                        { left: "85%", opacity: 1, scale: 1, transition: { duration: 0.8, delay: 1 } }
+                      ]}
+                      exit={{ opacity: 0 }}
+                      className="absolute w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-[0_0_25px_rgba(251,191,36,0.5)] z-10 flex items-center justify-center border-2 border-white/20"
+                    >
+                      <Activity size={20} className="text-black" />
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Paneles de Monitoreo */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <h4 className="flex items-center gap-2 text-gray-400 font-bold uppercase text-xs tracking-widest ml-1">
+                  <TerminalIcon size={16} className="text-ubuntu" /> Logs de Ubuntu Server
+                </h4>
+                <div className="bg-black/80 rounded-2xl p-6 border border-gray-800 font-mono text-sm h-80 overflow-y-auto shadow-2xl custom-scrollbar">
+                  {logs.map((log, i) => (
+                    <div key={i} className={`mb-1 ${log.startsWith('!') ? 'text-red-400' : log.startsWith('>') ? 'text-blue-300' : 'text-green-500/80'}`}>
+                      <span className="opacity-30 mr-2">[{new Date().toLocaleTimeString()}]</span> {log}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="flex items-center gap-2 text-gray-400 font-bold uppercase text-xs tracking-widest ml-1">
+                  <ShieldCheck size={16} className="text-purple-400" /> Carga Útil (Payload)
+                </h4>
+                <div className="bg-gray-900/40 rounded-2xl p-6 border border-gray-800 h-80 overflow-y-auto shadow-inner">
+                  {response ? (
+                    <motion.pre initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-purple-300 text-sm leading-relaxed">
+                      {JSON.stringify(response, null, 2)}
+                    </motion.pre>
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center text-gray-600 italic">
+                      <div className="w-12 h-12 rounded-full border-2 border-gray-800 border-t-gray-600 animate-spin mb-4"></div>
+                      Esperando respuesta del servidor remoto...
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold mb-2">Guía Técnica de Implementación</h2>
+              <p className="text-gray-400">Cómo configurar este servicio en un entorno Ubuntu real.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-gray-900/60 p-6 rounded-2xl border border-gray-800">
+                <h3 className="flex items-center gap-2 font-bold mb-4 text-ubuntu">
+                  <Code size={20} /> Instalación de Squid
+                </h3>
+                <pre className="bg-black p-4 rounded-xl text-xs text-green-400 border border-gray-800">
+                  sudo apt update{"\n"}
+                  sudo apt install squid -y{"\n"}
+                  sudo systemctl start squid{"\n"}
+                  sudo systemctl enable squid
+                </pre>
+              </div>
+
+              <div className="bg-gray-900/60 p-6 rounded-2xl border border-gray-800">
+                <h3 className="flex items-center gap-2 font-bold mb-4 text-blue-400">
+                  <Settings size={20} /> Configuración ACL
+                </h3>
+                <pre className="bg-black p-4 rounded-xl text-xs text-gray-300 border border-gray-800">
+                  # /etc/squid/squid.conf{"\n"}
+                  acl localnet src 192.168.1.0/24{"\n"}
+                  http_access allow localnet{"\n"}
+                  http_port 3128
+                </pre>
+              </div>
+            </div>
+
+            <div className="bg-ubuntu/5 border border-ubuntu/20 p-8 rounded-3xl">
+              <div className="flex gap-4">
+                <Info className="text-ubuntu shrink-0" size={24} />
+                <div>
+                  <h4 className="font-bold mb-2 text-lg">Nota para el Proyecto Final</h4>
+                  <p className="text-gray-400 leading-relaxed">
+                    Un servidor proxy no solo redirige tráfico; es fundamental para la seguridad perimetral, 
+                    el almacenamiento en caché (ahorro de ancho de banda) y el filtrado de contenido en redes corporativas. 
+                    En Ubuntu, **Squid** es el estándar de la industria, mientras que **Nginx** destaca como Proxy Inverso.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </main>
+
+      <footer className="mt-20 border-t border-gray-800 py-12 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-gray-500 text-sm">
+            © 2026 - Proyecto de Demostración de Servicios de Red
+          </div>
+          <div className="flex gap-4">
+            <div className="px-4 py-2 bg-gray-900 rounded-lg text-xs font-mono text-gray-400 border border-gray-800">
+              Desplegado en: <span className="text-white">Netlify Edge</span>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <footer className="mt-16 border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
-        <p>© 2026 Proyecto de Redes - Implementación de Servidores Proxy en Sistemas Linux</p>
       </footer>
-    </main>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0,0,0,0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #333;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #E95420;
+        }
+      `}</style>
+    </div>
   );
 }

@@ -1,46 +1,28 @@
-# 🛡️ Proxy Service Demonstration - Ubuntu Project
+# 🛡️ Ubuntu Proxy Demo - High Performance Project
 
-Este proyecto es una demostración interactiva y profesional de cómo funciona un servicio Proxy en un entorno **Ubuntu**. Diseñado como un proyecto final, combina una interfaz web moderna con una simulación real de flujo de paquetes.
+Este es un proyecto final de ingeniería de redes que demuestra la implementación y el funcionamiento de un servidor Proxy en **Ubuntu 22.04 LTS**.
 
-## 🚀 Características
-- **Diagrama Dinámico:** Animaciones en tiempo real que muestran el flujo Cliente -> Proxy -> Servidor.
-- **Simulación Real:** Backend con Next.js que actúa como intermediario (Proxy).
-- **Consola de Logs:** Panel estilo terminal de Ubuntu que muestra las cabeceras y peticiones procesadas.
-- **Guía Técnica:** Documentación integrada sobre configuración de Nginx y Squid en Ubuntu.
+## 🌐 Despliegue en Netlify
 
-## 🛠️ Tecnologías Utilizadas
-- **Next.js 14** (App Router)
-- **Tailwind CSS** (Estilos profesionales)
-- **Framer Motion** (Animaciones de red)
-- **Lucide React** (Iconografía)
+Este proyecto está optimizado para Netlify. Los pasos para desplegarlo son:
 
-## 💻 Instalación en Ubuntu
+1.  Conecta tu repositorio de GitHub a Netlify.
+2.  Usa los siguientes ajustes de compilación:
+    *   **Build command:** `npm run build`
+    *   **Publish directory:** `.next`
+3.  Netlify detectará automáticamente el plugin de Next.js y configurará las API Routes como **Serverless Functions**.
 
-Para ejecutar este proyecto en tu servidor Ubuntu:
+## 🚀 Características Avanzadas
+- **Dashboard Multitesta:** Alterna entre la demostración en vivo y la guía técnica de configuración.
+- **Visualización de Paquetes:** Animaciones fluidas que representan el viaje de los datos.
+- **Compatible con Mobile:** Diseño totalmente responsivo para presentaciones.
+- **Ubuntu Identity:** Estética fiel al sistema operativo Linux Ubuntu.
 
-1. **Instalar Node.js:**
-   ```bash
-   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-   sudo apt-get install -y nodejs
-   ```
-
-2. **Clonar el repositorio:**
-   ```bash
-   git clone https://github.com/xllnyxthornllx/Proxy.git
-   cd Proxy
-   ```
-
-3. **Instalar dependencias:**
-   ```bash
-   npm install
-   ```
-
-4. **Ejecutar en modo desarrollo:**
-   ```bash
-   npm run dev
-   ```
-
-El proyecto estará disponible en `http://localhost:3000`.
+## 🛠️ Stack Técnico
+- **Framework:** Next.js 14 (App Router)
+- **Despliegue:** Netlify Edge Functions
+- **Estilos:** Tailwind CSS con animaciones Framer Motion
+- **Icons:** Lucide-react
 
 ---
-Desarrollado para la demostración de servicios de red en Linux/Ubuntu.
+Proyecto creado por xllnyxthornllx para demostraciones de infraestructura Linux.
